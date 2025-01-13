@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
+
 import { TaskComponent } from './task/task.component';
 import { NewTaskComponent } from './new-task/new-task.component';
+import { type NewTaskData } from './task/task.model';
 
 @Component({
   selector: 'app-tasks',
@@ -52,6 +54,38 @@ export class TasksComponent {
   }
 
   onCancelAddNewTask() {
+    this.isAddingTask = false;
+  }
+
+  onAddTask(taskData: NewTaskData) {
+    //// This does not satisfy Immutability
+    // this.tasks.unshift({
+    //   id: new Date().getTime().toString(),
+    //   userId: this.userId,
+    //   title: taskData.title,
+    //   summary: taskData.summary,
+    //   dueDate: taskData.date,
+    // });
+
+    // Immutability
+    // Why Is This Better?
+    // - No Direct Mutation: A new array is created by using the spread operator (...this.tasks), ensuring the original array remains unchanged.
+    // - Change Detection: Angular’s change detection mechanism works better with immutable operations, as it can more easily detect changes when references are updated.
+    
+    // By satisfying immutability, your application becomes more predictable, and its state management aligns with best practices,
+    // especially if you're using Angular features like OnPush change detection or a reactive state management library.
+    
+    this.tasks = [
+      {
+        id: new Date().getTime().toString(),
+        userId: this.userId,
+        title: taskData.title,
+        summary: taskData.summary,
+        dueDate: taskData.date,
+      },
+      ...this.tasks
+    ];
+
     this.isAddingTask = false;
   }
 }
